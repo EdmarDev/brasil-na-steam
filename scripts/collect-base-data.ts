@@ -21,7 +21,7 @@ import {load} from "cheerio"
 
 const DETAILS_WAIT_TIME = 1000
 const TAGS_WAIT_TIME = 200
-const DAYS_BEFORE_UPDATE = 0
+const DAYS_BEFORE_UPDATE = 7
 
 const tryInsertGenre = async (genreId: number, name: string) => {
   await drizzleDb
@@ -136,33 +136,50 @@ const getAppDetails = async (
     const publishers: string[] = data.publishers
     const developers: string[] = data.developers
 
-    const publisherIds = await Promise.all(
-      publishers.map(async (publisher) => await findOrInsertCompany(publisher))
-    )
-    await drizzleDb
-      .insert(gamePublisher)
-      .values(publisherIds.map((companyId) => ({gameAppId: appId, companyId})))
-      .onConflictDoNothing()
+    if (publishers?.length > 0) {
+      const publisherIds = await Promise.all(
+        publishers.map(
+          async (publisher) => await findOrInsertCompany(publisher)
+        )
+      )
+      await drizzleDb
+        .insert(gamePublisher)
+        .values(
+          publisherIds.map((companyId) => ({gameAppId: appId, companyId}))
+        )
+        .onConflictDoNothing()
+    }
 
-    const developerIds = await Promise.all(
-      developers.map(async (developer) => await findOrInsertCompany(developer))
-    )
-    await drizzleDb
-      .insert(gameDeveloper)
-      .values(developerIds.map((companyId) => ({gameAppId: appId, companyId})))
-      .onConflictDoNothing()
+    if (developers?.length > 0) {
+      const developerIds = await Promise.all(
+        developers.map(
+          async (developer) => await findOrInsertCompany(developer)
+        )
+      )
+
+      await drizzleDb
+        .insert(gameDeveloper)
+        .values(
+          developerIds.map((companyId) => ({gameAppId: appId, companyId}))
+        )
+        .onConflictDoNothing()
+    }
 
     const genres: {id: string; description: string}[] = data.genres
-    await Promise.all(
-      genres.map(
-        async (genre) =>
-          await tryInsertGenre(parseInt(genre.id), genre.description)
+    if (genres?.length > 0) {
+      await Promise.all(
+        genres.map(
+          async (genre) =>
+            await tryInsertGenre(parseInt(genre.id), genre.description)
+        )
       )
-    )
-    await drizzleDb
-      .insert(gameGenre)
-      .values(genres.map((g) => ({gameAppId: appId, genreId: parseInt(g.id)})))
-      .onConflictDoNothing()
+      await drizzleDb
+        .insert(gameGenre)
+        .values(
+          genres.map((g) => ({gameAppId: appId, genreId: parseInt(g.id)}))
+        )
+        .onConflictDoNothing()
+    }
 
     communityName = await getCommunityName(appId)
   }
