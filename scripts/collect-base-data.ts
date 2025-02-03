@@ -99,7 +99,12 @@ const formatDate = (rawDate: string) => {
 
 const getCommunityName = async (appId: number) => {
   const url = `https://steamcommunity.com/app/${appId}`
-  const res = await fetchWithRetry(url)
+  const res = await fetchWithRetry(url, {
+    headers: {
+      cookie: `wants_mature_content_apps=${appId}`,
+    },
+  })
+
   const html = await res.text()
   const $ = load(html)
 

@@ -93,8 +93,8 @@ async function getSessionId() {
       appId: true,
       released: true,
       communityName: true,
+      name: true,
     },
-    where: (game, {isNotNull}) => isNotNull(game.communityName),
   })
 
   for (let i = 0; i < gamesToUpdate.length; i++) {
@@ -106,7 +106,12 @@ async function getSessionId() {
       }]`
     )
 
-    await getFollowers(appId, currentGame.communityName!, sessionId)
+    const gameName =
+      !!currentGame.communityName && currentGame.communityName !== ""
+        ? currentGame.communityName
+        : currentGame.name ?? ""
+
+    await getFollowers(appId, gameName, sessionId)
     if (currentGame.released) await getReviews(appId)
   }
 
