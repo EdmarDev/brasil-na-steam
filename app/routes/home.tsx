@@ -1,6 +1,5 @@
 import type {Route} from "./+types/home"
 import {Welcome} from "../welcome/welcome"
-import {dbTest} from "db"
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -10,8 +9,7 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export async function loader({params}: Route.LoaderArgs) {
-  const product = await dbTest()
-  return product
+  return {}
 }
 
 export default function Home() {

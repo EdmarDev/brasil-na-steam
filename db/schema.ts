@@ -7,6 +7,7 @@ import {
   numeric,
   pgTable,
   primaryKey,
+  real,
   text,
   timestamp,
   uniqueIndex,
@@ -37,10 +38,12 @@ export const game = pgTable(
     appId: integer().primaryKey(),
     lastUpdate: timestamp({withTimezone: true, mode: "string"}),
     name: text(),
+    released: boolean(),
     releaseDate: date(),
-    price: numeric(),
+    price: integer(),
     shortDescription: text(),
     detailedDescription: text(),
+    communityName: text(),
   },
   (t) => [
     index("game_last_update_index").on(t.lastUpdate),
@@ -54,9 +57,9 @@ export const gameRelations = relations(game, ({many}) => ({
   reviews: many(gameReviews),
   publishers: many(gamePublisher, {relationName: "publisher"}),
   developers: many(gameDeveloper, {relationName: "developer"}),
-  genres: many(gameGenre),
-  tags: many(gameTag),
-  languages: many(gameLanguage),
+  gameToGenres: many(gameGenre),
+  gameToTags: many(gameTag),
+  gameToLanguages: many(gameLanguage),
 }))
 
 export const genre = pgTable("genre", {
@@ -65,7 +68,7 @@ export const genre = pgTable("genre", {
 })
 
 export const genreRelations = relations(genre, ({many}) => ({
-  games: many(gameGenre),
+  genreToGames: many(gameGenre),
 }))
 
 export const tag = pgTable("tag", {
@@ -74,7 +77,7 @@ export const tag = pgTable("tag", {
 })
 
 export const tagRelations = relations(tag, ({many}) => ({
-  games: many(gameTag),
+  tagToGames: many(gameTag),
 }))
 
 export const language = pgTable("language", {
@@ -83,14 +86,14 @@ export const language = pgTable("language", {
 })
 
 export const languageRelations = relations(language, ({many}) => ({
-  games: many(gameLanguage),
+  languageToGames: many(gameLanguage),
 }))
 
 export const gameFollowers = pgTable(
   "game_followers",
   {
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
-    followers: numeric().notNull(),
+    followers: integer().notNull(),
     timestamp: timestamp({withTimezone: true, mode: "string"}).notNull(),
     gameAppId: integer()
       .notNull()
@@ -114,7 +117,7 @@ export const gameReviews = pgTable(
   {
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
     totalReviews: integer().notNull(),
-    positivePercentage: numeric().notNull(),
+    positivePercentage: real().notNull(),
     timestamp: timestamp({withTimezone: true, mode: "string"}).notNull(),
     gameAppId: integer()
       .notNull()
@@ -196,7 +199,7 @@ export const gameGenreRelations = relations(gameGenre, ({one}) => ({
     fields: [gameGenre.gameAppId],
     references: [game.appId],
   }),
-  company: one(genre, {
+  genre: one(genre, {
     fields: [gameGenre.genreId],
     references: [genre.id],
   }),
@@ -220,7 +223,7 @@ export const gameTagRelations = relations(gameTag, ({one}) => ({
     fields: [gameTag.gameAppId],
     references: [game.appId],
   }),
-  company: one(tag, {
+  tag: one(tag, {
     fields: [gameTag.tagId],
     references: [tag.id],
   }),
@@ -244,7 +247,7 @@ export const gameLanguageRelations = relations(gameLanguage, ({one}) => ({
     fields: [gameLanguage.gameAppId],
     references: [game.appId],
   }),
-  company: one(language, {
+  language: one(language, {
     fields: [gameLanguage.languageId],
     references: [language.id],
   }),
