@@ -8,13 +8,12 @@ import {load} from "cheerio"
 
 const WAIT_TIME = 500
 
-const getFollowers = async (
+const scrapeFollowersUrl = async (
+  searchText: string,
   appId: number,
-  communityName: string,
   sessionId: string
 ) => {
   await setTimeout(WAIT_TIME)
-  const searchText = `${appId} ${communityName}`
   const url = `https://steamcommunity.com/search/SearchCommunityAjax?text=${searchText}&filter=groups&sessionid=${sessionId}&page=1`
   const res = await fetchWithRetry(url, {
     headers: {
@@ -34,7 +33,28 @@ const getFollowers = async (
     })
     .find('span[style="color: whitesmoke"]')
     .text()
-  const followers = parseInt(followersText.replaceAll(`,`, ""))
+  return parseInt(followersText.replaceAll(`,`, ""))
+}
+
+const getFollowers = async (
+  appId: number,
+  communityName: string,
+  sessionId: string
+) => {
+  let followers = await scrapeFollowersUrl(`${appId}`, appId, sessionId)
+
+  if (isNaN(followers)) {
+    // Retry with name
+    followers = await scrapeFollowersUrl(
+      `${appId} ${communityName}`,
+      appId,
+      sessionId
+    )
+  }
+
+  if (isNaN(followers)) {
+    return
+  }
 
   await drizzleDb.insert(gameFollowers).values({
     gameAppId: appId,
