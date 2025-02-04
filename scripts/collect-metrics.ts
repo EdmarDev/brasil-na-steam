@@ -44,7 +44,12 @@ const getFollowers = async (
   let followers = await scrapeFollowersUrl(`${appId}`, appId, sessionId)
 
   if (isNaN(followers)) {
-    // Retry with name
+    // Retry with only name
+    followers = await scrapeFollowersUrl(communityName, appId, sessionId)
+  }
+
+  if (isNaN(followers)) {
+    // Retry with id + name
     followers = await scrapeFollowersUrl(
       `${appId} ${communityName}`,
       appId,
