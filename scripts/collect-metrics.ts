@@ -136,8 +136,13 @@ async function getSessionId() {
         ? currentGame.communityName
         : currentGame.name ?? ""
 
-    await getFollowers(appId, gameName, sessionId)
-    if (currentGame.released) await getReviews(appId)
+    try {
+      await getFollowers(appId, gameName, sessionId)
+      if (currentGame.released) await getReviews(appId)
+    } catch (e) {
+      console.error(`Erro: Falha ao coletar dados com o id ${appId}`)
+      console.error(e)
+    }
   }
 
   console.log("Coleta concluída!")
