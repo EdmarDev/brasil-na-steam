@@ -5,6 +5,7 @@ import {fetchWithRetry} from "./utils"
 import {game, gameFollowers, gameReviews} from "db/schema"
 import {sql} from "drizzle-orm"
 import {load} from "cheerio"
+import {logger} from "util/logger"
 
 const WAIT_TIME = 500
 
@@ -13,27 +14,33 @@ const scrapeFollowersUrl = async (
   appId: number,
   sessionId: string
 ) => {
-  await setTimeout(WAIT_TIME)
-  const url = `https://steamcommunity.com/search/SearchCommunityAjax?text=${searchText}&filter=groups&sessionid=${sessionId}&page=1`
-  const res = await fetchWithRetry(url, {
-    headers: {
-      cookie: `sessionid=${sessionId}`,
-    },
-  })
-  const data = await res.json()
-  const html = data.html
-  const $ = load(html)
-
-  const followersText = $(".searchPersonaInfo")
-    .filter((_, div) => {
-      return (
-        $(div).find(`a[href="https://steamcommunity.com/app/${appId}"]`)
-          .length > 0
-      )
+  let url, res, data, html
+  try {
+    await setTimeout(WAIT_TIME)
+    url = `https://steamcommunity.com/search/SearchCommunityAjax?text=${searchText}&filter=groups&sessionid=${sessionId}&page=1`
+    res = await fetchWithRetry(url, {
+      headers: {
+        cookie: `sessionid=${sessionId}`,
+      },
     })
-    .find('span[style="color: whitesmoke"]')
-    .text()
-  return parseInt(followersText.replaceAll(`,`, ""))
+    data = await res.json()
+    html = data.html
+    const $ = load(html)
+
+    const followersText = $(".searchPersonaInfo")
+      .filter((_, div) => {
+        return (
+          $(div).find(`a[href="https://steamcommunity.com/app/${appId}"]`)
+            .length > 0
+        )
+      })
+      .find('span[style="color: whitesmoke"]')
+      .text()
+    return parseInt(followersText.replaceAll(`,`, ""))
+  } catch (e) {
+    logger.info({url, res, data, html})
+    throw e
+  }
 }
 
 const getFollowers = async (
@@ -103,6 +110,8 @@ async function getSessionId() {
 }
 
 ;(async () => {
+  const i = 1
+  if (i === 1) throw new Error()
   if (fileURLToPath(import.meta.url) !== process.argv[1]) {
     return
   }
