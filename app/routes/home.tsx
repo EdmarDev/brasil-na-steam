@@ -1,5 +1,5 @@
+import {Paper, RangeSlider, Text} from "@mantine/core"
 import type {Route} from "./+types/home"
-import {Welcome} from "../welcome/welcome"
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -13,5 +13,5 @@ export async function loader({params}: Route.LoaderArgs) {
 }
 
 export default function Home() {
-  return <Welcome />
+  return <></>
 }
