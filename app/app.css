@@ -4,3 +4,14 @@ body {
     color-scheme: dark;
   }
 }
+
+:root {
+  --custom-yellow: #ffe245;
+  --custom-bg-blue-0: #295c8e;
+  --custom-bg-blue-1: #1e4771;
+  --custom-bg-blue-2: #183d62;
+  --custom-bg-blue-3: #0a1f33;
+  --custom-blue-0: #005cb8;
+  --custom-blue-1: #00478f;
+  --custom-blue-2: #003d7a;
+}

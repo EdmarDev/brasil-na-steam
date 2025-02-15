@@ -1,0 +1,9 @@
+.container {
+  min-height: 100svh;
+  background: var(--custom-bg-blue-2);
+  background: radial-gradient(
+    circle at 12% 300px in hsl,
+    var(--custom-bg-blue-2),
+    var(--custom-bg-blue-3)
+  );
+}

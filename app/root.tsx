@@ -11,6 +11,8 @@ import stylesheet from "./app.css?url"
 import {
   ColorSchemeScript,
   MantineProvider,
+  Text,
+  createTheme,
   mantineHtmlProps,
 } from "@mantine/core"
 import "@mantine/core/styles.css"
@@ -27,7 +29,32 @@ export const links: Route.LinksFunction = () => [
     href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
   },
   {rel: "stylesheet", href: stylesheet},
+  {
+    rel: "preconnect",
+    href: "https://fonts.googleapis.com",
+  },
+  {
+    rel: "preconnect",
+    href: "https://fonts.gstatic.com",
+    crossOrigin: "anonymous",
+  },
+  {
+    rel: "preload",
+    href: "https://fonts.googleapis.com/css2?family=Amiko:wght@400;600;700&display=swap",
+  },
 ]
+
+const theme = createTheme({
+  components: {
+    Text: Text.extend({
+      defaultProps: {
+        inherit: true,
+        ff: `"Amiko", "Arial", sans-serif`,
+        tt: "uppercase",
+      },
+    }),
+  },
+})
 
 export function Layout({children}: {children: React.ReactNode}) {
   return (
@@ -40,7 +67,7 @@ export function Layout({children}: {children: React.ReactNode}) {
         <Links />
       </head>
       <body>
-        <MantineProvider>{children}</MantineProvider>
+        <MantineProvider theme={theme}>{children}</MantineProvider>
         <ScrollRestoration />
         <Scripts />
       </body>
