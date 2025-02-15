@@ -110,8 +110,6 @@ async function getSessionId() {
 }
 
 ;(async () => {
-  const i = 1
-  if (i === 1) throw new Error()
   if (fileURLToPath(import.meta.url) !== process.argv[1]) {
     return
   }
