@@ -262,7 +262,7 @@ const getTags = async (appId: number, currentTags: Tag[]) => {
           gameTag.tagId,
           tagsToRemove.map((ttr) => ttr.id)
         ),
-        eq(game.appId, appId)
+        eq(gameTag.gameAppId, appId)
       )
     )
   }
