@@ -38,7 +38,7 @@ const scrapeFollowersUrl = async (
       .text()
     return parseInt(followersText.replaceAll(`,`, ""))
   } catch (e) {
-    logger.info({url, res, data, html})
+    logger.info({url, res, data, html, e})
     throw e
   }
 }
