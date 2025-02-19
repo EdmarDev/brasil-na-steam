@@ -14,7 +14,7 @@ const scrapeFollowersUrl = async (
   appId: number,
   sessionId: string
 ) => {
-  let url, res, data, html
+  let url, res, responseText, data, html
   try {
     await setTimeout(WAIT_TIME)
     url = `https://steamcommunity.com/search/SearchCommunityAjax?text=${searchText}&filter=groups&sessionid=${sessionId}&page=1`
@@ -23,7 +23,8 @@ const scrapeFollowersUrl = async (
         cookie: `sessionid=${sessionId}`,
       },
     })
-    data = await res.json()
+    responseText = await res.text()
+    data = JSON.parse(responseText)
     html = data.html
     const $ = load(html)
 
@@ -37,8 +38,8 @@ const scrapeFollowersUrl = async (
       .find('span[style="color: whitesmoke"]')
       .text()
     return parseInt(followersText.replaceAll(`,`, ""))
-  } catch (e) {
-    logger.info({url, res, data, html, e})
+  } catch (e: any) {
+    logger.info({url, res, responseText, data, html, e: e?.message})
     throw e
   }
 }
