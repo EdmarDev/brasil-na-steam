@@ -18,6 +18,7 @@ import {and, eq, inArray, sql, type InferSelectModel} from "drizzle-orm"
 import {DateTime} from "luxon"
 import type {Tag} from "db/types"
 import {load} from "cheerio"
+import {logger} from "util/logger"
 
 const DETAILS_WAIT_TIME = 1000
 const TAGS_WAIT_TIME = 200
@@ -119,103 +120,112 @@ const getAppDetails = async (
   const url = `https://store.steampowered.com/api/appdetails?appids=${appId}&l=brazilian`
 
   await setTimeout(DETAILS_WAIT_TIME)
-  const res = await fetchWithRetry(url)
+  let res
+  try {
+    res = await fetchWithRetry(url)
 
-  const data = (await res.json())[appId.toString()]?.data
-  if (!data) {
-    console.error(`Erro: Falha ao obter dados. AppId: ${appId}`)
-    return
-  }
+    const data = (await res.json())[appId.toString()]?.data
 
-  const gameName: string = data.name
-  const detailedDescription: string = data.detailed_description
-  const shortDescription: string = data.short_description
-  const comingSoon: boolean = !!data.release_date?.coming_soon
-  const rawReleaseDate: string = data.release_date?.date ?? ""
-  const price: number = data.price_overview?.initial
-  let communityName: string | undefined = undefined
+    const gameName: string = data.name
+    const detailedDescription: string = data.detailed_description
+    const shortDescription: string = data.short_description
+    const comingSoon: boolean = !!data.release_date?.coming_soon
+    const rawReleaseDate: string = data.release_date?.date ?? ""
+    const price: number = data.price_overview?.initial
+    let communityName: string | undefined = undefined
 
-  const releaseDate = formatDate(rawReleaseDate)
+    const releaseDate = formatDate(rawReleaseDate)
 
-  if (firstUpdate) {
-    const publishers: string[] = data.publishers
-    const developers: string[] = data.developers
+    if (firstUpdate) {
+      const publishers: string[] = data.publishers
+      const developers: string[] = data.developers
 
-    if (publishers?.length > 0) {
-      const publisherIds = await Promise.all(
-        publishers.map(
-          async (publisher) => await findOrInsertCompany(publisher)
+      if (publishers?.length > 0) {
+        const publisherIds = await Promise.all(
+          publishers.map(
+            async (publisher) => await findOrInsertCompany(publisher)
+          )
         )
-      )
-      await drizzleDb
-        .insert(gamePublisher)
-        .values(
-          publisherIds.map((companyId) => ({gameAppId: appId, companyId}))
+        await drizzleDb
+          .insert(gamePublisher)
+          .values(
+            publisherIds.map((companyId) => ({gameAppId: appId, companyId}))
+          )
+          .onConflictDoNothing()
+      }
+
+      if (developers?.length > 0) {
+        const developerIds = await Promise.all(
+          developers.map(
+            async (developer) => await findOrInsertCompany(developer)
+          )
         )
-        .onConflictDoNothing()
+
+        await drizzleDb
+          .insert(gameDeveloper)
+          .values(
+            developerIds.map((companyId) => ({gameAppId: appId, companyId}))
+          )
+          .onConflictDoNothing()
+      }
+
+      const genres: {id: string; description: string}[] = data.genres
+      if (genres?.length > 0) {
+        await Promise.all(
+          genres.map(
+            async (genre) =>
+              await tryInsertGenre(parseInt(genre.id), genre.description)
+          )
+        )
+        await drizzleDb
+          .insert(gameGenre)
+          .values(
+            genres.map((g) => ({gameAppId: appId, genreId: parseInt(g.id)}))
+          )
+          .onConflictDoNothing()
+      }
+
+      communityName = await getCommunityName(appId)
     }
 
-    if (developers?.length > 0) {
-      const developerIds = await Promise.all(
-        developers.map(
-          async (developer) => await findOrInsertCompany(developer)
-        )
-      )
-
-      await drizzleDb
-        .insert(gameDeveloper)
-        .values(
-          developerIds.map((companyId) => ({gameAppId: appId, companyId}))
-        )
-        .onConflictDoNothing()
-    }
-
-    const genres: {id: string; description: string}[] = data.genres
-    if (genres?.length > 0) {
-      await Promise.all(
-        genres.map(
-          async (genre) =>
-            await tryInsertGenre(parseInt(genre.id), genre.description)
-        )
-      )
-      await drizzleDb
-        .insert(gameGenre)
-        .values(
-          genres.map((g) => ({gameAppId: appId, genreId: parseInt(g.id)}))
-        )
-        .onConflictDoNothing()
-    }
-
-    communityName = await getCommunityName(appId)
-  }
-
-  await drizzleDb
-    .update(game)
-    .set({
-      name: gameName,
-      detailedDescription,
-      shortDescription,
-      released: !comingSoon,
-      communityName,
-      lastUpdate: sql`CURRENT_TIMESTAMP`,
-      ...(!!releaseDate ? {releaseDate} : {}),
-      ...(!!price ? {price} : {}),
-    })
-    .where(eq(game.appId, appId))
-
-  const languages: string[] = extractLanguages(data.supported_languages ?? "")
-  const newLanguages = languages.filter((l) => !currentLanguages.includes(l))
-
-  if (newLanguages.length > 0) {
-    const languageIds = await Promise.all(
-      newLanguages.map(
-        async (newLanguage) => await findOrInsertLanguage(newLanguage)
-      )
-    )
     await drizzleDb
-      .insert(gameLanguage)
-      .values(languageIds.map((languageId) => ({gameAppId: appId, languageId})))
-      .onConflictDoNothing()
+      .update(game)
+      .set({
+        name: gameName,
+        detailedDescription,
+        shortDescription,
+        released: !comingSoon,
+        communityName,
+        lastUpdate: sql`CURRENT_TIMESTAMP`,
+        ...(!!releaseDate ? {releaseDate} : {}),
+        ...(!!price ? {price} : {}),
+      })
+      .where(eq(game.appId, appId))
+
+    const languages: string[] = extractLanguages(data.supported_languages ?? "")
+    const newLanguages = languages.filter((l) => !currentLanguages.includes(l))
+
+    if (newLanguages.length > 0) {
+      const languageIds = await Promise.all(
+        newLanguages.map(
+          async (newLanguage) => await findOrInsertLanguage(newLanguage)
+        )
+      )
+      await drizzleDb
+        .insert(gameLanguage)
+        .values(
+          languageIds.map((languageId) => ({gameAppId: appId, languageId}))
+        )
+        .onConflictDoNothing()
+    }
+  } catch (e: any) {
+    console.error(`Erro: Falha ao obter dados. AppId: ${appId}`)
+    logger.info({
+      url,
+      ok: res?.ok,
+      status: res?.status,
+      statusText: res?.statusText,
+    })
   }
 }
 
