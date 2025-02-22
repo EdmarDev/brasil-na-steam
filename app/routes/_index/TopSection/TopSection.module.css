@@ -1,0 +1,12 @@
+.container {
+  min-height: 33rem;
+  background: var(--custom-green-bg);
+  background: radial-gradient(
+    at 22% -20px,
+    var(--custom-green-bg),
+    var(--custom-blue-0)
+  );
+  position: relative;
+  padding: 0 12%;
+  flex-wrap: nowrap;
+}

@@ -1,0 +1,61 @@
+.container {
+  padding: 1rem;
+  flex: 1;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.title,
+.itemTitle,
+.itemDescription,
+.seeMore {
+  color: var(--custom-yellow);
+  user-select: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  text-shadow: 4px 4px var(--custom-blue-0);
+}
+
+.listItem {
+  background-color: #003d7ab3;
+  padding: 0.625rem;
+  flex-wrap: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.itemTextStack {
+  gap: 0;
+  min-width: 0;
+}
+
+.gameCapsule {
+  min-width: 107px;
+  height: 40px;
+}
+
+.itemTitle {
+  font-size: 0.875rem;
+}
+
+.itemDescription {
+  font-size: 0.688rem;
+  opacity: 70%;
+}
+
+.seeMore {
+  font-size: 0.625rem;
+}
+
+.listItem,
+.itemTitle,
+.itemTextStack,
+.itemDescription {
+  text-decoration: none;
+}
