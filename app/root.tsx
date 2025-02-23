@@ -39,7 +39,7 @@ export const links: Route.LinksFunction = () => [
     crossOrigin: "anonymous",
   },
   {
-    rel: "preload",
+    rel: "stylesheet",
     href: "https://fonts.googleapis.com/css2?family=Amiko:wght@400;600;700&display=swap",
   },
 ]
