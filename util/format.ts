@@ -14,3 +14,13 @@ export const formatReleaseDate = (releaseDate: string) => {
 
   return luxonDate.toLocaleString(DateTime.DATE_MED, {locale: "pt-BR"})
 }
+
+const priceFormatter = new Intl.NumberFormat("pt-BR", {
+  style: "currency",
+  currency: "BRL",
+  minimumFractionDigits: 2,
+})
+
+export const formatPrice = (price: number) => {
+  return priceFormatter.format(price / 100)
+}

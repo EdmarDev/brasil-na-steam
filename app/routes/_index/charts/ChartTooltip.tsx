@@ -3,6 +3,7 @@ import type {TooltipProps} from "recharts"
 import classes from "./Charts.module.css"
 import type {ChartSeries} from "./types"
 import {getSeriesGameCountName, getSeriesMetricName} from "./util"
+import {formatNumber} from "util/format"
 
 type ChartTooltipProps = TooltipProps<number, string> & {
   hoveredSeries?: ChartSeries
@@ -31,13 +32,13 @@ export default function ChartTooltip({
         <Divider mt={8} mb={8} />
         <Text>
           <Text span className={classes.tooltipNumber}>
-            {countPayload.value}
+            {formatNumber(countPayload.value ?? 0)}
           </Text>{" "}
           {gameCountText}
         </Text>
         <Text className={classes.metricText}>
           <Text span className={classes.tooltipNumber}>
-            {metricPayload?.value ?? 0}
+            {formatNumber(metricPayload?.value ?? 0)}
           </Text>{" "}
           {metricLabel}
         </Text>

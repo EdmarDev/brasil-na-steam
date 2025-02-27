@@ -208,6 +208,7 @@ export default function BaseChart({
           orientation="right"
           tickLine={false}
           axisLine={false}
+          tickFormatter={formatNumber}
           label={{
             value: metricLabel,
             angle: 0,
