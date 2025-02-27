@@ -1,9 +1,11 @@
-import {Box, Paper, RangeSlider, Text} from "@mantine/core"
+import {Box, Paper, RangeSlider, Stack, Text} from "@mantine/core"
 import type {Route} from "./+types/route"
 import Navbar from "./Navbar/Navbar"
 import classes from "./Home.module.css"
 import TopSection from "./TopSection/TopSection"
 import type {TopGames} from "../api.top-games"
+import ChartContainer from "./ChartContainer/ChartContainer"
+import ReleasesChart from "./charts/ReleasesChart"
 
 export function meta({}: Route.MetaArgs) {
   return [{title: "Brasil Na Steam"}]
@@ -20,7 +22,15 @@ export default function Home() {
     <div className={classes.container}>
       <Navbar />
       <TopSection />
-      <Box h={2500} />
+      <Stack className={classes.chartsContainer}>
+        <ChartContainer title="Lançamentos por ano">
+          <ReleasesChart />
+        </ChartContainer>
+        <ChartContainer title="Comparação de gêneros"></ChartContainer>
+        <ChartContainer title="Comparação de tags" />
+        <ChartContainer title="Distribuição de preços" />
+        <ChartContainer title="Idiomas suportados" />
+      </Stack>
     </div>
   )
 }

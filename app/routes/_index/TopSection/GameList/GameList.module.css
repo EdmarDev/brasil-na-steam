@@ -23,7 +23,8 @@
 }
 
 .listItem {
-  background-color: #003d7ab3;
+  background: #003d7ab3;
+  background: linear-gradient(180deg, #003d7ab3 0%, #003d7a80 100%);
   padding: 0.625rem;
   flex-wrap: nowrap;
   overflow: hidden;

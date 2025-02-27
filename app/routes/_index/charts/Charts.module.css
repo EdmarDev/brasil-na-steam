@@ -1,0 +1,25 @@
+.metricAxis {
+  tspan {
+    fill: var(--chart-metric);
+  }
+}
+
+.customTooltip {
+  background: #ffffffff;
+  background: linear-gradient(180deg, #ffffffff 0%, #ffffffe6 100%);
+  padding: 1rem;
+  user-select: none;
+
+  font-size: 0.875rem;
+  font-weight: 650;
+}
+
+.metricText {
+  color: var(--chart-metric);
+}
+
+.tooltipNumber {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin-right: 0.5rem;
+}

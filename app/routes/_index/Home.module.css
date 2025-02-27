@@ -4,6 +4,10 @@
   background: radial-gradient(
     circle at 12% 300px in hsl,
     var(--custom-bg-blue-2),
-    var(--custom-bg-blue-3)
+    var(--custom-bg-blue-4)
   );
+}
+
+.chartsContainer {
+  padding: 4rem 25%;
 }
