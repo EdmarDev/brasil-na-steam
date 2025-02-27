@@ -23,3 +23,8 @@
   font-weight: 700;
   margin-right: 0.5rem;
 }
+
+.tooltipTitle {
+  text-align: center;
+  font-size: 1.25rem;
+}

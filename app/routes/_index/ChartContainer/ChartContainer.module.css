@@ -5,7 +5,7 @@
 }
 
 .chartBackground {
-  min-height: 20rem;
+  min-height: 20.625rem;
   background: #0b3e70b3;
   background: linear-gradient(180deg, #0b3e7066 0%, #0b3e7033 100%);
   padding: 1rem;

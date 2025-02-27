@@ -6,6 +6,7 @@ import TopSection from "./TopSection/TopSection"
 import type {TopGames} from "../api.top-games"
 import ChartContainer from "./ChartContainer/ChartContainer"
 import ReleasesChart from "./charts/ReleasesChart"
+import GenreChart from "./charts/GenreChart"
 
 export function meta({}: Route.MetaArgs) {
   return [{title: "Brasil Na Steam"}]
@@ -26,7 +27,9 @@ export default function Home() {
         <ChartContainer title="Lançamentos por ano">
           <ReleasesChart />
         </ChartContainer>
-        <ChartContainer title="Comparação de gêneros"></ChartContainer>
+        <ChartContainer title="Comparação de gêneros">
+          <GenreChart />
+        </ChartContainer>
         <ChartContainer title="Comparação de tags" />
         <ChartContainer title="Distribuição de preços" />
         <ChartContainer title="Idiomas suportados" />

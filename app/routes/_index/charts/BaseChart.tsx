@@ -20,10 +20,14 @@ import {
 } from "./util"
 
 const FONT_SIZE = 12
+const X_AXIS_FONT_SIZE = 10
+const X_TICK_OFFSET = 12
+const X_TICK_ODD_OFFSET = 14
 
 type BaseChartProps = {
   metricLabel: string
   series: ChartSeries[]
+  offsetTicks?: boolean
 }
 
 const SmallBar = (props: any) => {
@@ -38,6 +42,57 @@ const SmallBar = (props: any) => {
       fill={fill}
       opacity={0.85}
     />
+  )
+}
+
+const CustomXTicks = (props: any) => {
+  const {
+    x,
+    y,
+    stroke,
+    fill,
+    payload,
+    className,
+    fontSize,
+    height,
+    width,
+    textAnchor,
+    orientation,
+    offsetTicks,
+  } = props
+
+  const oddTick = offsetTicks ? payload.index % 2 === 1 : false
+  const offset = oddTick ? X_TICK_ODD_OFFSET + fontSize : X_TICK_OFFSET
+  const lineHeight = offset
+
+  return (
+    <g className={className}>
+      <text
+        orientation={orientation}
+        width={width}
+        height={height}
+        font-size={fontSize}
+        stroke={stroke}
+        x={x}
+        y={y + offset}
+        className="recharts-text recharts-cartesian-axis-tick-value"
+        text-anchor={textAnchor}
+        fill={fill}
+      >
+        <tspan>{payload.value}</tspan>
+      </text>
+
+      {oddTick && (
+        <line
+          x1={x}
+          x2={x}
+          y1={y - 4}
+          y2={y + lineHeight - fontSize}
+          stroke="#fff"
+          strokeWidth={1}
+        />
+      )}
+    </g>
   )
 }
 
@@ -70,7 +125,11 @@ const formatData = (series: ChartSeries[]) => {
   })
 }
 
-export default function BaseChart({series, metricLabel}: BaseChartProps) {
+export default function BaseChart({
+  series,
+  metricLabel,
+  offsetTicks = false,
+}: BaseChartProps) {
   const data = formatData(series)
 
   const hoveredSeries = useRef<ChartSeries[]>([])
@@ -106,18 +165,22 @@ export default function BaseChart({series, metricLabel}: BaseChartProps) {
     .flat()
 
   return (
-    <ResponsiveContainer width="100%" height={320}>
+    <ResponsiveContainer width="100%" height={330}>
       <BarChart
         width={5000}
-        height={300}
+        height={330}
         data={data}
-        margin={{top: 24, left: 10}}
+        margin={{top: 24, left: 10, bottom: 10}}
       >
         <XAxis
           dataKey="category"
           tickLine={false}
           axisLine={false}
-          fontSize={FONT_SIZE}
+          fontSize={X_AXIS_FONT_SIZE}
+          interval={0}
+          tick={(props) => (
+            <CustomXTicks offsetTicks={offsetTicks} {...props} />
+          )}
         />
         <XAxis
           xAxisId={"metric"}

@@ -1,4 +1,4 @@
-import {Box, Text} from "@mantine/core"
+import {Box, Divider, Text} from "@mantine/core"
 import type {TooltipProps} from "recharts"
 import classes from "./Charts.module.css"
 import type {ChartSeries} from "./types"
@@ -20,13 +20,15 @@ export default function ChartTooltip({
     (element) => element.dataKey === getSeriesGameCountName(hoveredSeries)
   )
   const metricPayload = payload.find(
-    (elemet) => elemet.dataKey === getSeriesMetricName(hoveredSeries)
+    (element) => element.dataKey === getSeriesMetricName(hoveredSeries)
   )
   if (countPayload) {
     const gameCountText = "Jogos"
-    const metricText = `${metricPayload?.value ?? 0} ${metricLabel}`
+    const category = countPayload.payload?.category
     return (
       <Box className={classes.customTooltip}>
+        <Text className={classes.tooltipTitle}>{category}</Text>
+        <Divider mt={8} mb={8} />
         <Text>
           <Text span className={classes.tooltipNumber}>
             {countPayload.value}
