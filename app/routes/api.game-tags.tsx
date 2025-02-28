@@ -1,17 +1,31 @@
 import type {LoaderFunctionArgs} from "react-router"
 import {drizzleDb} from "db"
-import {gameGenre, gameReviews, genre} from "db/schema"
+import {gameTag, gameReviews, tag} from "db/schema"
 import {
   and,
-  asc,
   avg,
   count,
+  desc,
   eq,
   getTableColumns,
-  inArray,
+  notInArray,
   sql,
 } from "drizzle-orm"
 import {genreNames} from "util/genre-names"
+
+const MAX_TAGS = 12
+
+const genres = [
+  "Casual",
+  "Ação",
+  "Aventura",
+  "Estratégia",
+  "RPG",
+  "Simulação",
+  "Corrida",
+  "Esportes",
+  "Multijogador Massivo",
+]
 
 const getGames = async () => {
   const latestReviews = drizzleDb.$with("latestReviews").as(
@@ -28,16 +42,17 @@ const getGames = async () => {
   const data = await drizzleDb
     .with(latestReviews)
     .select({
-      category: genre.name,
+      category: tag.name,
       gameCount: count(),
       metric: avg(latestReviews.totalReviews),
     })
     .from(latestReviews)
-    .innerJoin(gameGenre, eq(latestReviews.gameAppId, gameGenre.gameAppId))
-    .leftJoin(genre, eq(gameGenre.genreId, genre.id))
-    .where(and(eq(latestReviews.rn, "1"), inArray(genre.name, genreNames)))
-    .groupBy(genre.name)
-    .orderBy(asc(genre.name))
+    .innerJoin(gameTag, eq(latestReviews.gameAppId, gameTag.gameAppId))
+    .leftJoin(tag, eq(gameTag.tagId, tag.id))
+    .where(and(eq(latestReviews.rn, "1"), notInArray(tag.name, genreNames)))
+    .groupBy(tag.name)
+    .orderBy(desc(count()))
+    .limit(MAX_TAGS)
 
   return data.map((values) => ({
     ...values,
