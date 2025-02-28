@@ -9,6 +9,8 @@ import {
   eq,
   getTableColumns,
   inArray,
+  isNull,
+  or,
   sql,
 } from "drizzle-orm"
 import {genreNames} from "util/genre-names"
@@ -32,10 +34,15 @@ const getGames = async () => {
       gameCount: count(),
       metric: avg(latestReviews.totalReviews),
     })
-    .from(latestReviews)
-    .innerJoin(gameGenre, eq(latestReviews.gameAppId, gameGenre.gameAppId))
+    .from(gameGenre)
+    .leftJoin(latestReviews, eq(latestReviews.gameAppId, gameGenre.gameAppId))
     .leftJoin(genre, eq(gameGenre.genreId, genre.id))
-    .where(and(eq(latestReviews.rn, "1"), inArray(genre.name, genreNames)))
+    .where(
+      and(
+        or(eq(latestReviews.rn, "1"), isNull(latestReviews.rn)),
+        inArray(genre.name, genreNames)
+      )
+    )
     .groupBy(genre.name)
     .orderBy(asc(genre.name))
 

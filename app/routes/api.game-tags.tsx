@@ -8,7 +8,9 @@ import {
   desc,
   eq,
   getTableColumns,
+  isNull,
   notInArray,
+  or,
   sql,
 } from "drizzle-orm"
 import {genreNames} from "util/genre-names"
@@ -34,10 +36,15 @@ const getGames = async () => {
       gameCount: count(),
       metric: avg(latestReviews.totalReviews),
     })
-    .from(latestReviews)
-    .innerJoin(gameTag, eq(latestReviews.gameAppId, gameTag.gameAppId))
+    .from(gameTag)
+    .leftJoin(latestReviews, eq(latestReviews.gameAppId, gameTag.gameAppId))
     .leftJoin(tag, eq(gameTag.tagId, tag.id))
-    .where(and(eq(latestReviews.rn, "1"), notInArray(tag.name, genreNames)))
+    .where(
+      and(
+        or(eq(latestReviews.rn, "1"), isNull(latestReviews.rn)),
+        notInArray(tag.name, genreNames)
+      )
+    )
     .groupBy(tag.name)
     .orderBy(desc(count()))
     .limit(MAX_TAGS)

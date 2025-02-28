@@ -1,6 +1,6 @@
 import type {LoaderFunctionArgs} from "react-router"
 import {drizzleDb} from "db"
-import {game, gameGenre, gameReviews, genre} from "db/schema"
+import {game, gameReviews} from "db/schema"
 import {
   and,
   asc,
@@ -8,7 +8,8 @@ import {
   count,
   eq,
   getTableColumns,
-  inArray,
+  isNull,
+  or,
   sql,
 } from "drizzle-orm"
 import {formatPrice} from "util/format"
@@ -50,9 +51,14 @@ const getGames = async () => {
       gameCount: count(),
       metric: avg(latestReviews.totalReviews),
     })
-    .from(latestReviews)
-    .innerJoin(game, eq(latestReviews.gameAppId, game.appId))
-    .where(and(eq(latestReviews.rn, "1"), eq(game.released, true)))
+    .from(game)
+    .leftJoin(latestReviews, eq(latestReviews.gameAppId, game.appId))
+    .where(
+      and(
+        or(eq(latestReviews.rn, "1"), isNull(latestReviews.rn)),
+        eq(game.released, true)
+      )
+    )
     .groupBy(sql`bucket`)
     .orderBy(asc(sql`bucket`))
 
