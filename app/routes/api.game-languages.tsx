@@ -1,6 +1,6 @@
 import type {LoaderFunctionArgs} from "react-router"
 import {drizzleDb} from "db"
-import {gameTag, gameReviews, tag} from "db/schema"
+import {gameLanguage, gameReviews, language} from "db/schema"
 import {
   and,
   avg,
@@ -8,12 +8,14 @@ import {
   desc,
   eq,
   getTableColumns,
+  isNull,
   notInArray,
+  or,
   sql,
 } from "drizzle-orm"
 import {genreNames} from "util/genre-names"
 
-const MAX_TAGS = 12
+const MAX_LANGUAGES = 12
 
 const getGames = async () => {
   const latestReviews = drizzleDb.$with("latestReviews").as(
@@ -30,17 +32,20 @@ const getGames = async () => {
   const data = await drizzleDb
     .with(latestReviews)
     .select({
-      category: tag.name,
+      category: language.name,
       gameCount: count(),
       metric: avg(latestReviews.totalReviews),
     })
-    .from(latestReviews)
-    .innerJoin(gameTag, eq(latestReviews.gameAppId, gameTag.gameAppId))
-    .leftJoin(tag, eq(gameTag.tagId, tag.id))
-    .where(and(eq(latestReviews.rn, "1"), notInArray(tag.name, genreNames)))
-    .groupBy(tag.name)
+    .from(gameLanguage)
+    .leftJoin(
+      latestReviews,
+      eq(latestReviews.gameAppId, gameLanguage.gameAppId)
+    )
+    .leftJoin(language, eq(gameLanguage.languageId, language.id))
+    .where(and(or(eq(latestReviews.rn, "1"), isNull(latestReviews.rn))))
+    .groupBy(language.name)
     .orderBy(desc(count()))
-    .limit(MAX_TAGS)
+    .limit(MAX_LANGUAGES)
 
   return data.map((values) => ({
     ...values,

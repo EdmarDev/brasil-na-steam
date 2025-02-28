@@ -9,6 +9,7 @@ import ReleasesChart from "./charts/ReleasesChart"
 import GenreChart from "./charts/GenreChart"
 import PricesChart from "./charts/PricesChart"
 import TagsChart from "./charts/TagsChart"
+import LanguagesChart from "./charts/LanguagesChart"
 
 export function meta({}: Route.MetaArgs) {
   return [{title: "Brasil Na Steam"}]
@@ -38,7 +39,9 @@ export default function Home() {
         <ChartContainer title="Distribuição de preços">
           <PricesChart />
         </ChartContainer>
-        <ChartContainer title="Idiomas suportados" />
+        <ChartContainer title="Idiomas suportados">
+          <LanguagesChart />
+        </ChartContainer>
       </Stack>
     </div>
   )
