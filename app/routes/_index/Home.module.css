@@ -8,6 +8,12 @@
   );
 }
 
-.chartsContainer {
-  padding: 4rem 25%;
+.grid {
+  padding: 4rem 0;
+}
+
+.sideSection {
+  padding: 0 2rem;
+  position: sticky;
+  top: 5rem;
 }

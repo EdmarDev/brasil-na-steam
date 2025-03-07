@@ -18,6 +18,13 @@ import {
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query"
 import "@mantine/core/styles.css"
 import "@mantine/charts/styles.css"
+import "@mantine/dates/styles.css"
+import {DatesProvider} from "@mantine/dates"
+import dayjs from "dayjs"
+import customParseFormat from "dayjs/plugin/customParseFormat"
+import "dayjs/locale/pt-br"
+
+dayjs.extend(customParseFormat)
 
 export const links: Route.LinksFunction = () => [
   {rel: "preconnect", href: "https://fonts.googleapis.com"},
@@ -71,9 +78,11 @@ export function Layout({children}: {children: React.ReactNode}) {
         <Links />
       </head>
       <body>
-        <QueryClientProvider client={queryClient}>
-          <MantineProvider theme={theme}>{children}</MantineProvider>
-        </QueryClientProvider>
+        <DatesProvider settings={{consistentWeeks: true, locale: "pt-br"}}>
+          <QueryClientProvider client={queryClient}>
+            <MantineProvider theme={theme}>{children}</MantineProvider>
+          </QueryClientProvider>
+        </DatesProvider>
         <ScrollRestoration />
         <Scripts />
       </body>

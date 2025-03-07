@@ -71,12 +71,12 @@ const CustomXTicks = (props: any) => {
         orientation={orientation}
         width={width}
         height={height}
-        font-size={fontSize}
+        fontSize={fontSize}
         stroke={stroke}
         x={x}
         y={y + offset}
         className="recharts-text recharts-cartesian-axis-tick-value"
-        text-anchor={textAnchor}
+        textAnchor={textAnchor}
         fill={fill}
       >
         <tspan>{payload.value}</tspan>

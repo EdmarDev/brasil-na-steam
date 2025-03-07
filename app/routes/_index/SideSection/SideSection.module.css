@@ -1,0 +1,136 @@
+.panel {
+  background: #003d7ab3;
+  background: linear-gradient(90deg, #003d7ab3 0%, #003d7a33 100%);
+  padding: 1rem;
+  color: var(--custom-yellow);
+  gap: 0.5rem;
+}
+
+.metricLabel {
+  color: var(--chart-metric);
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+
+.metricInput {
+  color: var(--chart-metric-bright);
+}
+
+.metricInput,
+.filterInput,
+.dateInput,
+.multiSelectInput {
+  background: var(--custom-blue-0);
+  border-radius: 0;
+  font-size: 0.875rem;
+  font-weight: 700;
+  transition: none;
+  &:focus {
+    border: 1px solid #ffffff22;
+  }
+}
+
+.filterInput,
+.dateInput {
+  color: var(--custom-yellow);
+  font-size: 0.75rem;
+  min-height: 0.938rem;
+  height: 0.938rem;
+}
+
+.inputSection {
+  --combobox-chevron-color: #fff;
+  svg {
+    color: #fff;
+  }
+}
+
+.inputDropdown,
+.metricDropdown {
+  background: #005cb8ff;
+  background: linear-gradient(180deg, #005cb8ff 0%, #005cb8f2 100%);
+  color: var(--custom-yellow);
+  border-radius: 0;
+  border: 1px solid #ffffff22;
+}
+
+.metricDropdown {
+  color: var(--chart-metric-bright);
+}
+
+.inputDropdownOption {
+  font-weight: 600;
+  &:hover {
+    background: #ffffff22;
+    filter: brightness(1.2);
+    border-radius: 0;
+  }
+
+  svg {
+    color: #fff;
+  }
+}
+
+.filtersTitle {
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.filterNameLabel {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.filterSmallLabel {
+  font-size: 0.625rem;
+  font-weight: 600;
+  line-height: 0.625rem;
+  min-width: 1.25rem;
+}
+
+.filterMediumLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 0.75rem;
+  opacity: 0.8;
+}
+
+.checkbox {
+  background: #ffffff00;
+  border: 1px solid var(--custom-yellow);
+}
+
+.checkboxLabel {
+  text-transform: uppercase;
+  font-size: 0.75rem;
+}
+
+.sliderBackground {
+  --track-bg: var(--custom-blue-2);
+}
+
+.sliderThumb {
+  background: var(--custom-blue-0);
+  border-color: var(--custom-blue-0);
+}
+
+.multiSelectInputField {
+  color: var(--custom-yellow);
+  font-family: "Amiko", "Arial", sans-serif;
+  font-size: 0.75rem;
+
+  &::placeholder {
+    color: var(--custom-yellow);
+    opacity: 0.625;
+  }
+}
+
+.multiSelectPill {
+  border-radius: 0;
+  font-family: "Amiko", "Arial", sans-serif;
+  line-height: 0.688rem;
+  font-size: 0.688rem;
+  color: var(--custom-yellow);
+  border: 1px solid var(--custom-yellow);
+  background: rgba(255, 255, 255, 0);
+}
