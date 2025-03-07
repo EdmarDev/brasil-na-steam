@@ -22,8 +22,6 @@ export default function ReleasesChart() {
     },
   })
 
-  console.log(data)
-
   if (isLoading) {
     return (
       <Center mih={"inherit"}>
