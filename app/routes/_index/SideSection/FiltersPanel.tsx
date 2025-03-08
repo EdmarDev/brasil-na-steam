@@ -9,7 +9,7 @@ import FilterTags from "./FilterTags"
 
 export default function FiltersPanel() {
   return (
-    <Stack className={classes.panel}>
+    <Stack className={classes.filtersPanel}>
       <Text className={classes.filtersTitle}>Filtros</Text>
       <Divider variant="dashed" opacity={0.5} />
       <FilterDates />

@@ -1,6 +1,7 @@
-import {Group, Image as MantineImage, Stack, Text} from "@mantine/core"
+import {Group, Stack, Text} from "@mantine/core"
 import classes from "./GameList.module.css"
 import {useEffect, useState} from "react"
+import CapsuleImage from "~/common-components/CapsuleImage"
 
 type GameListItemProps = {
   title: string
@@ -12,17 +13,6 @@ export default function GameListItem({
   description,
   appId,
 }: GameListItemProps) {
-  const capsuleUrl = `https://cdn.akamai.steamstatic.com/steam/apps/${appId}/capsule_231x87.jpg`
-  const fallbackUrl = `https://cdn.akamai.steamstatic.com/steam/apps/${appId}/header.jpg`
-  const [imageSrc, setImageSrc] = useState(capsuleUrl)
-
-  useEffect(() => {
-    const img = new Image()
-    img.src = capsuleUrl
-    img.onload = () => setImageSrc(capsuleUrl)
-    img.onerror = () => setImageSrc(fallbackUrl)
-  }, [appId]) // Run effect when appId changes
-
   return (
     <Group
       className={classes.listItem}
@@ -31,11 +21,7 @@ export default function GameListItem({
       href={`https://store.steampowered.com/app/${appId}`}
       target="_blank"
     >
-      <MantineImage
-        className={classes.gameCapsule}
-        src={imageSrc}
-        alt="Game Image"
-      />
+      <CapsuleImage appId={appId} className={classes.gameCapsule} />
       <Stack className={classes.itemTextStack}>
         <Text className={classes.itemTitle} tt={"none"}>
           {title}

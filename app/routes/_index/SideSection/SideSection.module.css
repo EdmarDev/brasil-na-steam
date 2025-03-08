@@ -1,9 +1,13 @@
-.panel {
+.panel,
+.filtersPanel {
   background: #003d7ab3;
   background: linear-gradient(90deg, #003d7ab3 0%, #003d7a33 100%);
   padding: 1rem;
   color: var(--custom-yellow);
   gap: 0.5rem;
+}
+.filtersPanel {
+  background: linear-gradient(240deg, #003d7ab3 0%, #003d7a33 100%);
 }
 
 .metricLabel {

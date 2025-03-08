@@ -104,6 +104,10 @@ const getGames = async (filters: ParsedFilters) => {
   )
 
   const data = await query
+  if (data.length === 0) {
+    return []
+  }
+
   if (metric.dataTransform !== undefined) {
     const transform = metric.dataTransform
     return data.map((values) => ({

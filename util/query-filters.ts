@@ -2,6 +2,7 @@ import {game, genre, tag} from "db/schema"
 import {
   eq,
   gte,
+  ilike,
   inArray,
   isNotNull,
   lte,
@@ -10,18 +11,25 @@ import {
   type SQLWrapper,
 } from "drizzle-orm"
 import {DateTime} from "luxon"
-import type {ParsedFilters} from "~/validation"
+import type {ParsedFilters, ParsedSearchParams} from "~/validation"
 import {getMetricQuery, latestFollowers, latestReviews} from "./metric-queries"
 import {chartMetrics, getMetricFromName} from "~/metrics"
 
-export const getSQLConditionsFromFilters = (filters: ParsedFilters) => {
+export const getSQLConditionsFromFilters = (
+  filters: Partial<ParsedFilters> & Partial<ParsedSearchParams>
+) => {
   const conditions: (SQLWrapper | undefined)[] = []
 
   if (!!filters.minDate) {
     const formattedDate = DateTime.fromISO(filters.minDate).toFormat(
       "yyyy-MM-dd"
     )
-    conditions.push(gte(game.releaseDate, formattedDate))
+    if (filters.includeUnreleased === false || !!filters.maxDate)
+      conditions.push(gte(game.releaseDate, formattedDate))
+    else
+      conditions.push(
+        or(gte(game.releaseDate, formattedDate), ne(game.released, true))
+      )
   }
 
   if (!!filters.maxDate) {
@@ -31,7 +39,11 @@ export const getSQLConditionsFromFilters = (filters: ParsedFilters) => {
     conditions.push(lte(game.releaseDate, formattedDate))
   }
 
-  if (filters.includeUnreleased === false) {
+  if (
+    filters.includeUnreleased === false ||
+    !!filters.maxDate ||
+    filters.sortBy === "Data de Lançamento"
+  ) {
     conditions.push(eq(game.released, true))
   }
 
@@ -42,8 +54,12 @@ export const getSQLConditionsFromFilters = (filters: ParsedFilters) => {
     conditions.push(lte(game.price, filters.maxPrice))
   }
 
-  if (filters.includeFree === false) {
-    conditions.push(isNotNull(game.price))
+  if (
+    filters.includeFree === false ||
+    !!filters.minPrice ||
+    filters.sortBy === "Preço"
+  ) {
+    conditions.push(or(isNotNull(game.price), ne(game.released, true)))
   }
 
   if (!!filters.minFollowers) {
@@ -86,6 +102,10 @@ export const getSQLConditionsFromFilters = (filters: ParsedFilters) => {
 
   if (!!filters.tags && filters.tags.length > 0) {
     conditions.push(inArray(tag.name, filters.tags))
+  }
+
+  if (!!filters.searchString && filters.searchString.trim() !== "") {
+    conditions.push(ilike(game.name, `%${filters.searchString}%`))
   }
 
   return conditions

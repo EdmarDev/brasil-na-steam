@@ -1,0 +1,68 @@
+.paginationRoot {
+  div {
+    --group-justify: center !important;
+  }
+}
+
+.paginationDots {
+  color: var(--custom-yellow);
+}
+
+.paginationControl {
+  color: var(--custom-yellow);
+  background: #005cb8b3;
+  background: linear-gradient(180deg, #005cb8b3 0%, #005cb866 100%);
+  border-radius: 0;
+  border: none;
+
+  &[data-active] {
+    border: 1px solid var(--custom-yellow);
+  }
+}
+
+.searchItem {
+  background: #003d7ab3;
+  background: linear-gradient(180deg, #003d7ab3 0%, #003d7a80 100%);
+  padding: 0.625rem;
+  text-overflow: ellipsis;
+  color: var(--custom-yellow);
+}
+
+.itemMainGroup {
+  flex-wrap: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.itemTextStack {
+  gap: 0;
+  min-width: 0;
+}
+
+.searchItem,
+.gameTitle,
+.itemTextStack,
+.gameDescription {
+  text-decoration: none;
+}
+
+.gameCapsule {
+  min-width: 231px;
+  height: 87px;
+}
+
+.gameDescription {
+  font-size: 0.625rem;
+  font-weight: 300;
+  color: white;
+}
+
+.itemSmallLabel {
+  font-size: 0.688rem;
+}
+
+.itemSmallLabelFaded {
+  color: #fff;
+  opacity: 0.75;
+  font-size: 0.625rem;
+}

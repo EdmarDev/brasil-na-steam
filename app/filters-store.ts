@@ -3,6 +3,7 @@ import {chartMetrics, type ChartMetric} from "./metrics"
 import {create} from "zustand"
 import {persist, createJSONStorage} from "zustand/middleware"
 import {useMemo} from "react"
+import type {SortDirectionOption, SortOption} from "util/sort-options"
 
 type FiltersState = {
   metric: ChartMetric
@@ -26,6 +27,11 @@ type FiltersState = {
 
   genres?: string[]
   tags?: string[]
+
+  searchString?: string
+
+  sortBy: SortOption
+  sortDirection: SortDirectionOption
 }
 
 type FiltersActions = {
@@ -51,6 +57,10 @@ type FiltersActions = {
 
   setGenres: (value: string[]) => void
   setTags: (value: string[]) => void
+
+  setSearchString: (value: string) => void
+  setSortBy: (value: SortOption) => void
+  setSortDirection: (value: SortDirectionOption) => void
 }
 
 export const useFiltersStore = create<FiltersState & FiltersActions>()(
@@ -60,6 +70,8 @@ export const useFiltersStore = create<FiltersState & FiltersActions>()(
       minDate: DateTime.fromObject({year: 2015, day: 1, month: 1}).toISO()!,
       includeUnreleased: true,
       includeFree: true,
+      sortBy: "Data de Lançamento",
+      sortDirection: "Decrescente",
 
       setMetric: (metric) => set({metric}),
       setMinDate: (minDate) => set({minDate: minDate || null}),
@@ -82,6 +94,9 @@ export const useFiltersStore = create<FiltersState & FiltersActions>()(
         set({maxPositiveReviews: maxPositiveReviews ?? undefined}),
       setGenres: (genres) => set({genres}),
       setTags: (tags) => set({tags}),
+      setSearchString: (searchString) => set({searchString}),
+      setSortBy: (sortBy) => set({sortBy}),
+      setSortDirection: (sortDirection) => set({sortDirection}),
     }),
     {
       name: "filters-store",
@@ -90,7 +105,7 @@ export const useFiltersStore = create<FiltersState & FiltersActions>()(
   )
 )
 
-export const useFiltersParams = () => {
+export const useFiltersParams = (includeSearch = false) => {
   const filters = useFiltersStore()
 
   return useMemo(() => {
@@ -123,6 +138,13 @@ export const useFiltersParams = () => {
       params.set("genres", filters.genres.join(","))
     if (filters.tags && filters.tags.length > 0)
       params.set("tags", filters.tags.join(","))
+
+    if (includeSearch) {
+      if (filters.searchString && filters.searchString.trim() !== "")
+        params.set("searchString", filters.searchString)
+      params.set("sortBy", filters.sortBy)
+      params.set("sortDirection", filters.sortDirection)
+    }
 
     return params.toString()
   }, [filters])

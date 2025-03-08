@@ -119,6 +119,9 @@ const getGames = async (filters: ParsedFilters) => {
   )
 
   const data = await query
+  if (data.length === 0) {
+    return []
+  }
   const formattedData = data.map((values) => ({
     category: bucketToCategory(values.category),
     gameCount: values.gameCount,
