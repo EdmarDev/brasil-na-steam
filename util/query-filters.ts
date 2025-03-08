@@ -1,5 +1,14 @@
 import {game, genre, tag} from "db/schema"
-import {eq, gte, inArray, isNotNull, lte, type SQLWrapper} from "drizzle-orm"
+import {
+  eq,
+  gte,
+  inArray,
+  isNotNull,
+  lte,
+  ne,
+  or,
+  type SQLWrapper,
+} from "drizzle-orm"
 import {DateTime} from "luxon"
 import type {ParsedFilters} from "~/validation"
 import {getMetricQuery, latestFollowers, latestReviews} from "./metric-queries"
@@ -55,13 +64,19 @@ export const getSQLConditionsFromFilters = (filters: ParsedFilters) => {
 
   if (!!filters.minPositiveReviews) {
     conditions.push(
-      gte(latestReviews.positivePercentage, filters.minPositiveReviews)
+      or(
+        ne(game.released, true),
+        gte(latestReviews.positivePercentage, filters.minPositiveReviews)
+      )
     )
   }
 
   if (!!filters.maxPositiveReviews) {
     conditions.push(
-      lte(latestReviews.positivePercentage, filters.maxPositiveReviews)
+      or(
+        ne(game.released, true),
+        lte(latestReviews.positivePercentage, filters.maxPositiveReviews)
+      )
     )
   }
 
@@ -112,7 +127,9 @@ export const filtersRequireGames = (filters: ParsedFilters) =>
   !filters.includeUnreleased ||
   !!filters.minPrice ||
   !!filters.maxPrice ||
-  !filters.includeFree
+  !filters.includeFree ||
+  !!filters.minPositiveReviews ||
+  !!filters.maxPositiveReviews
 
 export const getWithQueriesFromFilters = (filters: ParsedFilters) => {
   const metric = filters.metric
