@@ -33,9 +33,10 @@ export default function GameList({
     <Stack className={classes.container}>
       <Text className={classes.title}>{title}</Text>
       {items}
+      {/* Implement this later (?)
       <Text className={classes.seeMore} tt="none" component="a" href="/search">
         Ver Mais
-      </Text>
+      </Text> */}
     </Stack>
   )
 }
