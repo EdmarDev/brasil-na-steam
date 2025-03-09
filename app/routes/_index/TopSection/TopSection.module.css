@@ -9,4 +9,12 @@
   position: relative;
   padding: 0 12%;
   flex-wrap: nowrap;
+
+  @mixin smaller-than 1630px {
+    padding: 0 4%;
+  }
+
+  @mixin smaller-than 1366px {
+    padding: 0;
+  }
 }
