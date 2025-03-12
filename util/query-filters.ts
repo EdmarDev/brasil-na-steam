@@ -108,6 +108,10 @@ export const getSQLConditionsFromFilters = (
     conditions.push(ilike(game.name, `%${filters.searchString}%`))
   }
 
+  if (filters.sortBy === "Análises Recebidas") {
+    conditions.push(isNotNull(latestReviews.totalReviews))
+  }
+
   return conditions
 }
 
