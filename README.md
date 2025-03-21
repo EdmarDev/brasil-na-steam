@@ -1,100 +1,79 @@
-# Welcome to React Router!
+# Brasil na Steam
 
-A modern, production-ready template for building full-stack React applications using React Router.
+Uma ferramenta para visualização de dados de jogos brasileiros na Steam.
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+Este projeto foi desenvolvido como um Trabalho de Conclusão para o curso de Bacharelado em Sistemas de Informação do Instituto Federal de Educação, Ciência e Tecnologia Fluminense.
 
-## Features
+## Principais tecnologias utilizadas
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+- [React Router 7](https://reactrouter.com/home)
+- [Drizzle](https://orm.drizzle.team/)
+- [Mantine](https://mantine.dev/)
+- [PosgreSQL](https://www.postgresql.org/)
+- [Recharts](https://recharts.org/en-US/)
 
-## Getting Started
+## Configuração inicial
 
-### Installation
-
-Install the dependencies:
+Instale as dependências:
 
 ```bash
 npm install
 ```
 
-### Development
+Este projeto precisa se conectar a um banco de dados PostgreSQL. Crie um arquivo chamado `.env` e insira a string de conexão do banco de dados da seguinte forma:
 
-Start the development server with HMR:
+```ini
+# Substitua com um valor real
+DATABASE_URL=postgresql://user:password@localhost:5432/nome_do_banco
+```
+
+Utilize o seguinte comando para criar automaticamente as estruturas do banco de dados: (Mais informações em: [drizzle-kit push](https://orm.drizzle.team/docs/drizzle-kit-push))
+
+```bash
+npx drizzle-kit push
+```
+
+## Inserção de dados iniciais
+
+É possível inserir dados diretamente, providenciando _App IDs_ de jogos com o comando:
+
+```bash
+npx tsx scripts/insert-game-ids.ts 2872300 1422420 # Insira outros IDs de jogos aqui...
+```
+
+Ou com um arquivo JSON, que deve conter um array de IDs:
+
+```bash
+npx tsx scripts/insert-game-ids.ts --file caminho/do/arquivo.json
+```
+
+Também é possível inserir nomes de desenvolvedores ou distribuidoras na Steam:
+
+```bash
+npx tsx scripts/insert-brazilian-companies.ts "Nuuvem Inc" "Behold Studios" # ...
+# OU
+npx tsx scripts/insert-brazilian-companies.ts --file caminho/do/arquivo.json
+```
+
+E encontrar todos os jogos desenvolvidos/publicados pelas empresas:
+
+```bash
+npx tsx scripts/find-games-from-companies.ts
+```
+
+Os dados sobre os jogos podem ser coletados utilizando:
+
+```bash
+npx tsx scripts/collect-base-data.ts
+npx tsx scripts/collect-metrics.ts
+```
+
+## Iniciando o servidor de desenvolvimento
+
+Por fim, o servidor pode ser iniciado com o comando:
 
 ```bash
 npm run dev
 ```
 
-Your application will be available at `http://localhost:5173`.
-
-## Building for Production
-
-Create a production build:
-
-```bash
-npm run build
-```
-
-## Deployment
-
-### Docker Deployment
-
-This template includes three Dockerfiles optimized for different package managers:
-
-- `Dockerfile` - for npm
-- `Dockerfile.pnpm` - for pnpm
-- `Dockerfile.bun` - for bun
-
-To build and run using Docker:
-
-```bash
-# For npm
-docker build -t my-app .
-
-# For pnpm
-docker build -f Dockerfile.pnpm -t my-app .
-
-# For bun
-docker build -f Dockerfile.bun -t my-app .
-
-# Run the container
-docker run -p 3000:3000 my-app
-```
-
-The containerized application can be deployed to any platform that supports Docker, including:
-
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
-
-### DIY Deployment
-
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
-```
-
-## Styling
-
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
-
----
-
-Built with ❤️ using React Router.
+e acessado no endereço `http://localhost:5173/`
